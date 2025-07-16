@@ -1,174 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Счётчик посетителей</title>
     <meta charset="UTF-8">
+    <title>Тест чата</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            text-align: center;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 40px 60px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 100%;
-        }
-        h1 {
-            margin-top: 0;
-            font-size: 32px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        .counter-container {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 30px 0;
-        }
-        .counter-box {
-            background: rgba(255, 255, 255, 0.1);
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
             padding: 20px;
-            border-radius: 15px;
-            min-width: 120px;
         }
-        .counter-label {
-            font-size: 18px;
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
             margin-bottom: 10px;
-            opacity: 0.9;
+            overflow-y: auto;
         }
-        .counter-value {
-            font-size: 48px;
-            font-weight: bold;
-            color: #ffcc00;
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
-        }
-        .info {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-top: 30px;
-            line-height: 1.5;
-        }
-        .visitor-id {
-            word-break: break-all;
-            font-size: 12px;
-            margin-top: 20px;
-            opacity: 0.6;
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Счётчик посетителей сайта</h1>
-        
-        <div class="counter-container">
-            <div class="counter-box">
-                <div class="counter-label">Сейчас онлайн</div>
-                <div id="onlineCounter" class="counter-value">1</div>
-            </div>
-            <div class="counter-box">
-                <div class="counter-label">Всего посетителей</div>
-                <div id="totalCounter" class="counter-value">1</div>
-            </div>
-        </div>
-        
-        <div class="info">
-            • Счётчик обновляется в реальном времени<br>
-            • Данные сохраняются между сессиями<br>
-            • Закройте вкладку, чтобы уменьшить онлайн-счётчик
-        </div>
-        
-        <div id="visitorId" class="visitor-id"></div>
-    </div>
-
-    <script>
-        // Генерация уникального ID посетителя
-        function generateVisitorId() {
-            return 'visitor-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
-        }
-
-        // Получение или создание ID посетителя
-        function getOrCreateVisitorId() {
-            let visitorId = localStorage.getItem('visitorId');
-            if (!visitorId) {
-                visitorId = generateVisitorId();
-                localStorage.setItem('visitorId', visitorId);
-            }
-            return visitorId;
-        }
-
-        // Обновление счетчиков
-        function updateCounters() {
-            // Получаем текущие данные из localStorage
-            const now = Date.now();
-            const visitorId = getOrCreateVisitorId();
-            
-            // Обновляем информацию о текущем посетителе
-            localStorage.setItem(visitorId, now.toString());
-            
-            // Собираем данные всех посетителей
-            const allKeys = Object.keys(localStorage);
-            const visitors = {};
-            let totalCount = 0;
-            let onlineCount = 0;
-            
-            // Анализируем каждого посетителя
-            allKeys.forEach(key => {
-                if (key.startsWith('visitor-')) {
-                    totalCount++;
-                    const lastActive = parseInt(localStorage.getItem(key)) || 0;
-                    
-                    // Считаем онлайн (активны в последние 5 минут)
-                    if (now - lastActive < 5 * 60 * 1000) {
-                        onlineCount++;
-                    }
-                }
-            });
-            
-            // Обновляем данные на странице
-            document.getElementById('onlineCounter').textContent = onlineCount;
-            document.getElementById('totalCounter').textContent = totalCount;
-            document.getElementById('visitorId').textContent = `Ваш ID: ${visitorId}`;
-        }
-
-        // Отметить пользователя как активного
-        function markAsActive() {
-            const visitorId = getOrCreateVisitorId();
-            localStorage.setItem(visitorId, Date.now().toString());
-            updateCounters();
-        }
-
-        // Инициализация
-        window.addEventListener('DOMContentLoaded', () => {
-            // Первоначальное обновление
-            updateCounters();
-            
-            // Обновляем активность каждую минуту
-            setInterval(markAsActive, 60 * 1000);
-            
-            // Обновляем счетчики каждые 10 секунд
-            setInterval(updateCounters, 10 * 1000);
-            
-            // Отмечаем активность при взаимодействии с страницей
-            window.addEventListener('mousemove', markAsActive);
-            window.addEventListener('keydown', markAsActive);
-            window.addEventListener('click', markAsActive);
-            window.addEventListener('scroll', markAsActive);
-            
-            // Уменьшаем счетчик при закрытии вкладки
-            window.addEventListener('beforeunload', () => {
-                const visitorId = getOrCreateVisitorId();
-                localStorage.setItem(visitorId, (Date.now() - 10 * 60 * 1000).toString());
-            });
-        });
-    </script>
+    <h1>Тестирование чата</h1>
+    
+    <div id="messages"></div>
+    <div id="connectionStatus">Подключение...</div>
+    <input 
+        type="text" 
+        id="messageInput" 
+        placeholder="Введите сообщение"
+        autocomplete="off"
+    >
+    <button onclick="sendMessage()">Отправить</button>
+    <script src="js/main.js"></script>
 </body>
 </html>
