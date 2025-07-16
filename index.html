@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест чата</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: auto;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тестирование чата</h1>
+    
+    <div id="messages"></div>
+    <div id="connectionStatus">Подключение...</div>
+    <input 
+        type="text" 
+        id="messageInput" 
+        placeholder="Введите сообщение"
+        autocomplete="off"
+    >
+    <button onclick="sendMessage()">Отправить</button>
+    <script src="js/main.js"></script>
+</body>
+</html>
